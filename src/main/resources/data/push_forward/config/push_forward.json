@@ -1,0 +1,15 @@
+{
+  "blacklist_enabled": true,
+  "whitelist_enabled": false,
+  "blacklist": [],
+  "whitelist": [],
+  "damage_rate_of_multiplication": 5.0,
+  "knockback_rate_of_multiplication": 1.0,
+  "velocity_threshold": 5.0,
+  "min_damage": 0.0,
+  "max_damage": 100.0,
+  "min_knockback": 0.0,
+  "max_knockback": 5.0,
+  "hurt_back": true,
+  "hurt_back_rate_of_multiplication": 0.5
+}

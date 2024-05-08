@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "push_forward",
+  "version": "${version}",
+  "name": "PushForward",
+  "description": "猪突猛進(ちょとつもうしん)!",
+  "authors": [
+    "kltyton"
+  ],
+  "contact": {
+    "repo": "https://github.com/kltyton/PushForward"
+  },
+  "license": "LGPL-3.0",
+  "icon": "assets/push_forward/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.kltyton.name.push_forward.PushForward"
+    ]
+  },
+  "mixins": [
+    "push_forward.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
