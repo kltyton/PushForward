@@ -1,8 +1,5 @@
 package com.kltyton.name.push_forward;
 
-import com.kltyton.name.push_forward.config.ModConfig;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
@@ -23,6 +20,5 @@ public class PushForward implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Initializing PushForward");
-        AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
     }
 }

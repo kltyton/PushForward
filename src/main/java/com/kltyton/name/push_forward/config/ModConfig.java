@@ -1,20 +1,25 @@
 package com.kltyton.name.push_forward.config;
 
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-@Config(name = "push_forward")
-public class ModConfig implements ConfigData {
+public class ModConfig {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Path CONFIG_PATH = Paths.get("config", "push_forward.json");
     public float damageRateOfMultiplication = 5;
     public double knockbackRateOfMultiplication = 1.0;
     public double velocityThreshold = 5.0;
     public float maxDamage = 20;
-    public float minDamage = 1;
+    public float minDamage = 0;
     public double maxKnockback = 5.0;
-    public double minKnockback = 0.1;
+    public double minKnockback = 0.0;
     public double hurtBackRateOfMultiplication = 1.0;
     public boolean hurtBack = false;
     public boolean blackListEnabled = false;
@@ -22,55 +27,27 @@ public class ModConfig implements ConfigData {
     public List<String> blackList = new ArrayList<>();
     public List<String> whiteList = new ArrayList<>();
 
-    public float getDamageRateOfMultiplication() {
-        return damageRateOfMultiplication;
+    public static ModConfig load() {
+        if (Files.exists(CONFIG_PATH)) {
+            try {
+                String json = new String(Files.readAllBytes(CONFIG_PATH));
+                return GSON.fromJson(json, ModConfig.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ModConfig config = new ModConfig();
+        config.save();
+        return config;
     }
 
-    public double getKnockbackRateOfMultiplication() {
-        return knockbackRateOfMultiplication;
-    }
-
-    public double getVelocityThreshold() {
-        return velocityThreshold;
-    }
-
-    public float getMaxDamage() {
-        return maxDamage;
-    }
-
-    public float getMinDamage() {
-        return minDamage;
-    }
-
-    public double getMaxKnockback() {
-        return maxKnockback;
-    }
-
-    public double getMinKnockback() {
-        return minKnockback;
-    }
-
-    public double getHurtBackRateOfMultiplication() {
-        return hurtBackRateOfMultiplication;
-    }
-
-    public boolean isHurtBack() {
-        return hurtBack;
-    }
-
-    public boolean isBlackListEnabled() {
-        return blackListEnabled;
-    }
-
-    public boolean isWhiteListEnabled() {
-        return whiteListEnabled;
-    }
-
-    public List<String> getBlackList() {
-        return blackList;
-    }
-
-    public List<String> getWhiteList() {
-        return whiteList;
+    public void save() {
+        String json = GSON.toJson(this);
+        try {
+            Files.write(CONFIG_PATH, json.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

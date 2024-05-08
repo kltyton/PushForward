@@ -2,7 +2,6 @@ package com.kltyton.name.push_forward.mixin;
 
 import com.kltyton.name.push_forward.PushForward;
 import com.kltyton.name.push_forward.config.ModConfig;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -22,36 +21,34 @@ import java.util.List;
 @Mixin(Entity.class)
 public class EntityMixin {
     @Unique
-    private static ModConfig getConfig() {
-        return AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-    }
+    private static final ModConfig CONFIG = ModConfig.load();
 
     @Unique
-    private static final float DAMAGE_RATE_OF_MULTIPLICATION = getConfig().getDamageRateOfMultiplication();
+    private static final float DAMAGE_RATE_OF_MULTIPLICATION = CONFIG.damageRateOfMultiplication;
     @Unique
-    private static final double KNOCKBACK_RATE_OF_MULTIPLICATION = getConfig().getKnockbackRateOfMultiplication();
+    private static final double KNOCKBACK_RATE_OF_MULTIPLICATION = CONFIG.knockbackRateOfMultiplication;
     @Unique
-    private static final double VELOCITY_THRESHOLD = getConfig().getVelocityThreshold();
+    private static final double VELOCITY_THRESHOLD = CONFIG.velocityThreshold;
     @Unique
-    private static final float MAX_DAMAGE = getConfig().getMaxDamage();
+    private static final float MAX_DAMAGE = CONFIG.maxDamage;
     @Unique
-    private static final float MIN_DAMAGE = getConfig().getMinDamage();
+    private static final float MIN_DAMAGE = CONFIG.minDamage;
     @Unique
-    private static final double MAX_KNOCKBACK = getConfig().getMaxKnockback();
+    private static final double MAX_KNOCKBACK = CONFIG.maxKnockback;
     @Unique
-    private static final double MIN_KNOCKBACK = getConfig().getMinKnockback();
+    private static final double MIN_KNOCKBACK = CONFIG.minKnockback;
     @Unique
-    private static final double HURT_BACK_RATE_OF_MULTIPLICATION = getConfig().getHurtBackRateOfMultiplication();
+    private static final double HURT_BACK_RATE_OF_MULTIPLICATION = CONFIG.hurtBackRateOfMultiplication;
     @Unique
-    private static final boolean HURT_BACK = getConfig().isHurtBack();
+    private static final boolean HURT_BACK = CONFIG.hurtBack;
     @Unique
-    private static final boolean BLACKLIST_ENABLED = getConfig().isBlackListEnabled();
+    private static final boolean BLACKLIST_ENABLED = CONFIG.blackListEnabled;
     @Unique
-    private static final boolean WHITELIST_ENABLED = getConfig().isWhiteListEnabled();
+    private static final boolean WHITELIST_ENABLED = CONFIG.whiteListEnabled;
     @Unique
-    private static final List<String> BLACKLIST = getConfig().getBlackList();
+    private static final List<String> BLACKLIST = CONFIG.blackList;
     @Unique
-    private static final List<String> WHITELIST = getConfig().getWhiteList();
+    private static final List<String> WHITELIST = CONFIG.whiteList;
 
     @Shadow private World world;
 
@@ -78,23 +75,19 @@ public class EntityMixin {
         // 计算两个实体的速度
         Vec3d thisVelocity = thisEntity.getVelocity();
         Vec3d otherVelocity = entity.getVelocity();
-        double thisSpeed = thisVelocity.length();  // 方块/刻
-        double otherSpeed = otherVelocity.length();  // 方块/刻
-        // 如果 thisEntity 的速度大于 entity 的速度
+        double thisSpeed = thisVelocity.length() * 20;
+        double otherSpeed = otherVelocity.length() * 20;
+        // thisEntity 的速度大于 entity 的速度
         if (thisSpeed > otherSpeed && thisSpeed >= VELOCITY_THRESHOLD) {
-            // 计算撞击伤害，这里假设速度的平方作为伤害值，你可以根据需要调整这个公式
             float damage = (float) ((thisSpeed - otherSpeed) * DAMAGE_RATE_OF_MULTIPLICATION);
-            damage = Math.max(damage, MIN_DAMAGE); // 使用 Math.max 方法限制伤害值不小于最小伤害值
-            damage = Math.min(damage, MAX_DAMAGE); // 使用 Math.min 方法限制伤害值不超过最大伤害值
+            damage = Math.max(damage, MIN_DAMAGE);
+            damage = Math.min(damage, MAX_DAMAGE);
             double knockback = (thisSpeed - otherSpeed) * KNOCKBACK_RATE_OF_MULTIPLICATION;
-            knockback = Math.max(knockback, MIN_KNOCKBACK); // 使用 Math.max 方法限制击退值不小于最小击退值
-            knockback = Math.min(knockback, MAX_KNOCKBACK); // 使用 Math.min 方法限制击退值不超过最大击退值
-            // 创建一个自定义的伤害源
+            knockback = Math.max(knockback, MIN_KNOCKBACK);
+            knockback = Math.min(knockback, MAX_KNOCKBACK);
             entity.damage(PushForward.of(world, PushForward.COLLIDE), damage);
-            // 添加击退效果
             Vec3d knockbackDirection = entity.getPos().subtract(thisEntity.getPos()).normalize();
             entity.addVelocity(knockbackDirection.x * knockback, knockbackDirection.y * knockback, knockbackDirection.z * knockback);
-            // 标记 thisEntity 为发起撞击的实体
             thisEntity.getDataTracker().set(IS_PUSHING, true);
             if (HURT_BACK) {
                 thisEntity.damage(PushForward.of(world, PushForward.COLLIDE), (float) (damage * HURT_BACK_RATE_OF_MULTIPLICATION));
@@ -105,7 +98,6 @@ public class EntityMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         Entity thisEntity = (Entity) (Object) this;
-        // 在每个刻的开始时，重置 IS_PUSHING 的值
         if (thisEntity.getDataTracker().get(IS_PUSHING)) {
             thisEntity.getDataTracker().set(IS_PUSHING, false);
         }
