@@ -22,9 +22,11 @@ public class ModConfig {
     public double maxKnockback = 5.0;
     public double minKnockback = 0.0;
     public double hurtBackRateOfMultiplication = 1.0;
+    public double collisionBoxExpansion = 1.0;
     public boolean hurtBack = false;
     public boolean blackListEnabled = false;
     public boolean whiteListEnabled = false;
+    public boolean sensitiveModeEnabled = false;
     public List<String> blackList = new ArrayList<>();
     public List<String> whiteList = new ArrayList<>();
 
