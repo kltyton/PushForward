@@ -13,8 +13,9 @@ import java.util.List;
 public class ModConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = Paths.get("config", "push_forward.json");
-    public float damageRateOfMultiplication = 5;
-    public double knockbackRateOfMultiplication = 1.0;
+    public float damageRateOfMultiplication = 1;
+    public double knockbackRateOfMultiplication = 5.0;
+    public int knockbackTickTime = 0;
     public double velocityThreshold = 5.0;
     public float maxDamage = 20;
     public float minDamage = 0;
